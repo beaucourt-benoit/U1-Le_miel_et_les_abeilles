@@ -1,13 +1,11 @@
-
 import numpy as np
 from numpy import genfromtxt
-from pylab import *
 import random 
 
 fleurs = genfromtxt('Flowers.csv', delimiter=',')
 print(fleurs)
-essaim = np.array([])
-bee = np.array([])
+essaim = np.array()
+bee = np.array()
 
 for i in range(100):
     bee = np.concatenate(bee, [500,500])
