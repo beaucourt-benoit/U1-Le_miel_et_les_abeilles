@@ -7,37 +7,27 @@ from numpy import genfromtxt
 import random 
 import copy 
 
-#Mélange le génome de start à stop
-def shuffle_slice(a, start, stop):
-    i = start
-#    while (i < stop-1):
-    for i in range(1, stop-1):
-        idx = random.randrange(i, stop)
-        a[i], a[idx] = a[idx], a[i]
-        i += 1
+#essaim de 100 abeilles
+fleurs = genfromtxt('Flowers.csv', delimiter=',')
+fleurs = fleurs[1:]
+print("Init fleurs \n", fleurs)
 
-#Le champs, les fleurs et la ruche
+essaim = np.array(np.array([]))
 
-Tableau = []
-absx = []
-ordy = []
-id = []
+for i in range(100):
+    dfleurs = deepcopy(fleurs)
+    np.random.shuffle(dfleurs)
+    dfleurs = np.insert(dfleurs, 0, [500, 500])
+    dfleurs = np.append(dfleurs, [500,500])
+    print("\n", dfleurs, "\n")
+    essaim = np.append(essaim, dfleurs)
 
-Tableau = genfromtxt('Flowers.csv', delimiter=',')
-#print(Tableau)
 
-Tableau[0] = [500, 500]
-r = [[500,500]]
-T = np.concatenate((Tableau, r))
-
-n = len(T)
-#print(n)
-#print("AVANT TOUT", T)
-
-for j in range(n):
-    absx.append(int(T[j][0]))
-    ordy.append(int(T[j][1]))
-    id.append(int(j))
+for j in essaim:
+    print(j)
+    #absx.append(int(T[j][0]))
+    #ordy.append(int(T[j][1]))
+    #id.append(int(j))
 
 absx.append(500)
 ordy.append(500)
