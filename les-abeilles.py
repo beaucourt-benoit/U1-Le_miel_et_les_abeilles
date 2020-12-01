@@ -6,27 +6,13 @@ from copy import deepcopy, copy
 import matplotlib.pyplot as plt
 import pandas as pd
 
-#class Fleurs:
-    #Classe représentant un champ de fleurs
-#    def __init__(self):
-#        self.flowers, self.nbrflrs, self.fetchflowers()
-
-    #Constructeur de Fleurs
-#    def fetchflowers(self):
-#        df = pd.read_csv('Flowers.csv')
-#        subset = df[['x', 'y']]
-#        flowers = [tuple(x) for x in subset.to_numpy()]
-#        print('flowers', flowers)
-#        nbrflrs = len(flowers)
-#        print('nombre de fleurs', nbrflrs)
-#        return flowers, nbrflrs
-
 class Abeille:
     # Classe représentant une abeille
     def __init__(self):
         #init abeille
-        self.genome, self.parcours = self.buildgenes()
-        self.fitness = self.fitness()
+        self.genome = self.buildgenes()
+        self.parcours = self.path()
+        self.score = self.fitness()
 
     def printtest(self):
         print('genome', self.genome)
@@ -38,16 +24,14 @@ class Abeille:
         subset = df[['x', 'y']]
         flowers = [tuple(x) for x in subset.to_numpy()]
         f = flowers
-#        print('flowers', f, '\n')
         genome = deepcopy(f)
         np.random.shuffle(genome)
-#        print('genome', genome, '\n')
-    #    parcours = np.insert(genome, 0, (500, 500)
-        parcours = [(500, 500)] + genome + [(500, 500)]
-#        parcours = parcours.reshape(52, 2)
-#        parcours = [tuple(x) for x in ]
-        print('Parcours', parcours, '\n')
-        return genome, parcours
+        return genome
+
+    def path(self):
+        parcours = [(500, 500)] + self.genome + [(500, 500)]
+        #print('Parcours', parcours, '\n')
+        return parcours
 
     #Calcul de la distance
     def distance(self, pt1, pt2):
@@ -57,13 +41,13 @@ class Abeille:
 
     #Calcul de la fitness
     def fitness(self):
-        fitness = 0
+        score = 0
         for i in range(len(self.parcours) - 1):
             dist = self.distance(self.parcours[i], self.parcours[i+1])
             print("distance = ", dist, '\n')
-            fitness = fitness + dist
-            print("fitness = ", fitness, '\n')
-        return fitness
+            score = score + dist
+            print("fitness = ", score, '\n')
+        return score
 
     #Dessiner le parcours d'une abeille
     def draw_bee(self):
@@ -82,33 +66,58 @@ class Essaim:
     #Classe représentant un essaim de N abeilles
     def __init__(self):
         self.nba = int(input("Nombre d'abeille :"))
-        self.birate = int(input("Birthrate :"))
-        self.murate = int(input("Mutation rate :"))
-        self.mucoef = int(input("Mutation coefficient :"))
+        self.birate = float(input("Birthrate dans ]0:1[ :"))
+        self.murate = float(input("Mutation rate :"))
+        self.mucoef = float(input("Mutation coefficient :"))
         self.essaim = self.makeessaim()
+        self.bb = ()
+        self.meetgene = ()
+        self.F = []
 
     def makeessaim(self):
-        essaim = list(tuple())
-        for i in range(self.nba):
-            essaim = np.append(essaim, list(Abeille.buildgenes(self)))
-        print('essaim', essaim, '\n')
+        essaim = [Abeille() for i in range(self.nba)]
+        print('\n essaim', essaim, '\n')
         return essaim
 
+    def makefitness(self):
+        for maya in self.essaim:
+            print(maya.score)
+            self.F.append(copy(maya.score))
+        return self.F
+
     #choix des abeilles pour le crossover
-    def meetbee(self, essaim):
-        self.nbrmeetbees = int(self.nba * self.birate)
-        self.essaim = sorted(self.essaim)
-        self.meetbees = self.essaim[:self.nbrmeetbees]
+    def meetbee(self):
+        self.nbrmeetbees = int(round(self.nba * self.birate))
+        print('\n Nbrmeetbees', self.nbrmeetbees, '\n')
+        F = self.makefitness()
+        self.tri = np.argsort(F, axis=None)
+        print('\n liste triée', self.tri,"\n")
+
+        #self.essaim = sorted(self.essaim)
+        print('\n Sorted essaim', self.essaim, '\n')
+        self.meetbees = self.tri[:self.nbrmeetbees]
+        print('\n Sorted meetbees', self.meetbees, '\n')
+
+        for i in self.meetbees:
+            self.meetgene = np.append(self.meetgene, self.essaim[i])
+        print("\n meet genome", self.meetgene, '\n')
+        return self.meetgene
 
     def repro(self, a1, a2):
         for i in range(2):
             self.bb1 = a1
+            print('\n bb1', self.bb1, '\n')
             self.bb2 = a2
+            print('\n bb2', self.bb2, '\n')
         return self.bb1, self.bb2
 
-    def crossover(self, meetbees):
-        for i in range(int(len(meetbees)-1)):
+    def crossover(self):
+
+        for i in range(int(len(self.meetbees)-1)):
             self.repro(self.meetbees[i], self.meetbees[i+1])
+            self.bb = np.append(self.bb, (self.bb1, self.bb2))
+        print('\n les bébés', self.bb, '\n')
+        return self.bb
 
     def mutation(self, genome):
         self.genome = np.radom.shuffle(self.genome)
@@ -126,7 +135,13 @@ class generation:
 
 maya = Abeille()
 maya.printtest()
-maya.draw_bee()
+#maya.draw_bee()
 
 nuee = Essaim()
-print('ESSAIM', nuee.essaim, '\n')
+#print('ESSAIM', nuee.essaim, '\n')
+nuee.meetbee()
+
+print("\n genoome de l'abeille 1", nuee.meetgene[0].score, '\n')
+print("\n parcours de l'abeille 1", nuee.meetgene[0].parcours, '\n')
+
+nuee.crossover()
