@@ -104,20 +104,41 @@ class Essaim:
         return self.meetgene
 
     def repro(self, a1, a2):
-        for i in range(2):
-            self.bb1 = a1
-            print('\n bb1', self.bb1, '\n')
-            self.bb2 = a2
-            print('\n bb2', self.bb2, '\n')
-        return self.bb1, self.bb2
+        self.bb = ()
+        print('\n a1', a1, '\n')
+        print('\n a2', a2, '\n')
+        count = 0
+        for i in range(len(a1)-1):
+            for j in range(len(a2)-1):
+                print(range(len(a1)-1))
+                print('\n a1[', i, ']', a1[i], '\n')
+                print('\n a1[', i+1, ']', a1[i+1], '\n')
+                print('\n a2[', j, ']', a2[j], '\n')
+                print('\n a2[', j+1, ']', a2[j+1], '\n')
+
+                if all((a1[i], a1[i+1])) == all((a2[j], a2[j+1])):
+                    count = count +1
+                    self.bb = np.append(self.bb, (a1[i], a1[i+1]))
+                    print('\n YEAH! bb', self.bb, '\n')
+                print('\n counter J', j, '\n')
+            print('\n counter I', i, '\n')
+        print('\n FINAL bb', self.bb, '\n')
+        print('\n Nombre de boucle IF', count, '\n')
+        return self.bb
 
     def crossover(self):
-
+        print('\n meetbees', self.meetbees, '\n')
+        print('\n meetgene', self.meetgene, '\n')
+        self.babies = ()
         for i in range(int(len(self.meetbees)-1)):
-            self.repro(self.meetbees[i], self.meetbees[i+1])
-            self.bb = np.append(self.bb, (self.bb1, self.bb2))
-        print('\n les bébés', self.bb, '\n')
-        return self.bb
+            print('\n meetbees i ', self.meetbees[i], '\n')
+            print("\n genoome de l'abeille i", self.meetgene[i].score, '\n')
+            print("\n parcours de l'abeille i", nuee.meetgene[i].parcours, '\n')
+
+            self.repro(self.meetgene[i].genome, self.meetgene[i+1].genome)
+            self.babies = np.append(self.babies, self.bb)
+        print('\n les bébés', self.babies, '\n')
+        return self.babies
 
     def mutation(self, genome):
         self.genome = np.radom.shuffle(self.genome)
@@ -133,15 +154,27 @@ class generation:
 #        self.moyfitbb =
 #        self.fitnessaim =
 
-maya = Abeille()
-maya.printtest()
+#maya = Abeille()
+#maya.printtest()
 #maya.draw_bee()
 
 nuee = Essaim()
-#print('ESSAIM', nuee.essaim, '\n')
+print('ESSAIM', nuee.essaim, '\n')
 nuee.meetbee()
 
 print("\n genoome de l'abeille 1", nuee.meetgene[0].score, '\n')
 print("\n parcours de l'abeille 1", nuee.meetgene[0].parcours, '\n')
 
 nuee.crossover()
+
+#test1 = ((0, 0), (2, 3), (9, 6), (3, 8))
+#test2 = ((2, 3), (0, 0), (9, 6), (3, 8))
+#testbb = test1, test2
+
+
+#print('test1', test1)
+#print('test2', test2)
+
+
+
+Essaim.repro(testbb, test1, test2)
